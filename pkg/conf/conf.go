@@ -2,6 +2,7 @@ package conf
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
 	"github.com/yunify/hostnic-cni/pkg/constants"
 )
@@ -23,6 +24,7 @@ type PoolConf struct {
 	RouteTableBase int      `json:"routeTableBase,omitempty" yaml:"routeTableBase,omitempty"`
 	Tag            string   `json:"tag,omitempty" yaml:"tag,omitempty"`
 	VxNets         []string `json:"vxNets,omitempty" yaml:"vxNets,omitempty"`
+	IsVBC          bool     `json:"isVBC,omitempty" yaml:"isVBC,omitempty"`
 }
 
 type ServerConf struct {

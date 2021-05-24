@@ -2,6 +2,11 @@ package allocator
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/yunify/hostnic-cni/pkg/conf"
 	"github.com/yunify/hostnic-cni/pkg/constants"
@@ -10,10 +15,6 @@ import (
 	"github.com/yunify/hostnic-cni/pkg/networkutils"
 	"github.com/yunify/hostnic-cni/pkg/qcclient"
 	"github.com/yunify/hostnic-cni/pkg/rpc"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 type nicStatus struct {
@@ -439,7 +440,7 @@ func (a *Allocator) SyncHostNic(node bool) {
 
 func (a *Allocator) Start(stopCh <-chan struct{}) error {
 	// choose vxnet for node
-	err := k8s.K8sHelper.ChooseVxnetForNode(a.conf.VxNets, a.conf.MaxNic)
+	err := k8s.K8sHelper.ChooseVxnetForNode(a.conf.VxNets, a.conf.MaxNic, a.conf.IsVBC)
 	if err != nil {
 		log.WithError(err).Fatalf("failed to choose vxnet for node")
 	}

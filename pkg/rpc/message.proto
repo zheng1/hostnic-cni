@@ -15,6 +15,7 @@ message VxNet {
   string Gateway = 2;
   string Network = 3;
   string RouterID = 4;
+  string Zone = 5;
 }
 
 enum Status {

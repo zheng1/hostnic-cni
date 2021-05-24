@@ -6,6 +6,7 @@ data:
   hostnic: |
     {
       "pool":{
+        "isVBC":true,
         "poolHigh":5,
         "poolLow":3,
         "maxNic":60

@@ -22,7 +22,8 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/vishvananda/netlink v1.1.0
-	github.com/yunify/qingcloud-sdk-go v0.0.0-20201229081442-29b014374d9d
+	github.com/yunify/qingcloud-sdk-go v0.0.0-20210524132903-6d0338099b76 // indirect
+	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7
 	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e
 	golang.org/x/text v0.3.4 // indirect
 	google.golang.org/grpc v1.27.0

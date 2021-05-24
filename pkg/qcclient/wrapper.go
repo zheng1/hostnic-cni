@@ -3,9 +3,10 @@ package qcclient
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/davecgh/go-spew/spew"
 	log "github.com/sirupsen/logrus"
@@ -429,7 +430,8 @@ func (q *qingcloudAPIWrapper) getVxNets(ids []string, public bool) ([]*rpc.VxNet
 	var vxNets []*rpc.VxNet
 	for _, qcVxNet := range output.VxNetSet {
 		vxnetItem := &rpc.VxNet{
-			ID: *qcVxNet.VxNetID,
+			ID:   *qcVxNet.VxNetID,
+			Zone: *qcVxNet.ZoneID,
 		}
 
 		if qcVxNet.Router != nil {

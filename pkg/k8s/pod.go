@@ -2,13 +2,16 @@ package k8s
 
 import (
 	"context"
+	"reflect"
+	"time"
+
+	"github.com/yunify/hostnic-cni/pkg/qcclient"
+
 	"github.com/yunify/hostnic-cni/pkg/constants"
 	"github.com/yunify/hostnic-cni/pkg/rpc"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/util/retry"
-	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
 )
 
 // GetCurrentNodePods return the list of pods running on the local nodes
@@ -163,7 +166,34 @@ func (k *Helper) updateNodeVxnet(vxnet string) error {
 	})
 }
 
-func (k *Helper) ChooseVxnetForNode(vxnets []string, num int) error {
+func (k *Helper) filterVBCVxnets(vxnets []string) ([]string, error) {
+	resultVxnets, err := qcclient.QClient.GetVxNets(vxnets)
+	if err != nil {
+		return nil, err
+	}
+	node := &corev1.Node{}
+	err = k.Client.Get(context.Background(), client.ObjectKey{Name: k.NodeName}, node)
+	if err != nil {
+		return nil, err
+	}
+	annotations := node.GetAnnotations()
+	if annotations == nil {
+		return vxnets, nil
+	}
+	nodeZone := annotations["topology.kubernetes.io/zone"]
+	if nodeZone == "" {
+		return vxnets, nil
+	}
+	vxnets = []string{}
+	for _, resultVxnet := range resultVxnets {
+		if resultVxnet.Zone == nodeZone {
+			vxnets = append(vxnets, resultVxnet.ID)
+		}
+	}
+	return vxnets, nil
+}
+
+func (k *Helper) ChooseVxnetForNode(vxnets []string, num int, isVBC bool) error {
 	for {
 		err, need := k.needSetVxnetForNode(vxnets)
 		if err != nil {
@@ -183,6 +213,12 @@ func (k *Helper) ChooseVxnetForNode(vxnets []string, num int) error {
 			time.Sleep(100 * time.Millisecond)
 			continue
 		} else {
+			if isVBC {
+				vxnets, err = k.filterVBCVxnets(vxnets)
+				if err != nil {
+					return err
+				}
+			}
 			for _, vxnet := range vxnets {
 				if usage[vxnet] < maxNode {
 					choose = vxnet
